@@ -34,3 +34,11 @@ class ProjectRepository:
         except SQLAlchemyError as e:
             self.db.rollback()
             raise DatabaseException("Failed to update project", details=str(e))
+
+    def delete_project(self, project: models.Project) -> None:
+        try:
+            self.db.delete(project)
+            self.db.commit()
+        except SQLAlchemyError as e:
+            self.db.rollback()
+            raise DatabaseException("Failed to delete project", details=str(e))

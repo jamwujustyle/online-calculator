@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, UploadFile, File
+from fastapi.responses import Response as RawResponse
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -8,7 +9,7 @@ from auth.route import get_current_user
 from .file_service import FileService
 from .repo import ProjectRepository
 from .service import ProjectService
-from exceptions import ProjectNotFoundException, AppException
+
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 file_service = FileService()
@@ -28,6 +29,15 @@ def read_projects(skip: int = 0, limit: int = 100, project_service: ProjectServi
 @router.get("/{project_id}", response_model=schemas.Project)
 def read_project(project_id: str, project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):
     return project_service.get_project(project_id, current_user.id)
+
+@router.put("/{project_id}", response_model=schemas.Project)
+def update_project(project_id: str, updates: schemas.ProjectUpdate, project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):
+    return project_service.update_project_details(project_id, current_user.id, updates)
+
+@router.delete("/{project_id}", status_code=204)
+def delete_project(project_id: str, project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):
+    project_service.delete_project(project_id, current_user.id)
+    return RawResponse(status_code=204)
 
 @router.put("/{project_id}/params", response_model=schemas.Project)
 def update_project_params(project_id: str, params: schemas.ProjectUpdateParams, project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):

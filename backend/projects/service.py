@@ -40,3 +40,14 @@ class ProjectService:
         project.ai_description = description
         project.ai_commercial_text = commercial_text
         return self.repository.update_project(project)
+
+    def update_project_details(self, project_id: str, user_id: str, updates: schemas.ProjectUpdate) -> models.Project:
+        project = self.get_project(project_id, user_id)
+        update_data = updates.model_dump(exclude_unset=True)
+        for field, value in update_data.items():
+            setattr(project, field, value)
+        return self.repository.update_project(project)
+
+    def delete_project(self, project_id: str, user_id: str) -> None:
+        project = self.get_project(project_id, user_id)
+        self.repository.delete_project(project)

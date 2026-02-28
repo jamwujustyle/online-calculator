@@ -36,6 +36,12 @@ class ProjectUpdateParams(BaseModel):
     production_params: Optional[Dict[str, Any]] = None
     calculated_results: Optional[Dict[str, Any]] = None
 
+class ProjectUpdate(BaseModel):
+    title: Optional[str] = None
+    client_name: Optional[str] = None
+    contact: Optional[str] = None
+    notes: Optional[str] = None
+
 class Project(ProjectBase):
     id: str
     owner_id: str
