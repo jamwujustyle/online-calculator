@@ -9,4 +9,6 @@ COPY . .
 
 EXPOSE 3000
 
-CMD ["npm", "run", "dev", "--", "--host"]
+# Re-run npm install at startup to pick up any new packages
+# from the volume-mounted package.json
+CMD sh -c "npm install --silent && npm run dev -- --host"
