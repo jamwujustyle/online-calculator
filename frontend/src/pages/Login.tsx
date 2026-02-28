@@ -4,6 +4,7 @@ import { useStore } from '../store';
 import { authApi } from '../auth/api';
 import { UserPlus, Box, ArrowRight } from 'lucide-react';
 import { useGoogleLogin } from '@react-oauth/google';
+import { toast } from 'sonner';
 
 export const Login = () => {
     const [isRegister, setIsRegister] = useState(false);
@@ -37,7 +38,9 @@ export const Login = () => {
 
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.detail || err.response?.data?.message || 'Authentication failed');
+            const msg = err.response?.data?.detail || err.response?.data?.message || 'Authentication failed';
+            setError(msg);
+            toast.error(msg);
         } finally {
             setLoading(false);
         }
@@ -56,7 +59,9 @@ export const Login = () => {
 
                 navigate('/dashboard');
             } catch (err: any) {
-                setError(err.response?.data?.detail || 'Google Authentication failed');
+                const msg = err.response?.data?.detail || 'Google Authentication failed';
+                setError(msg);
+                toast.error(msg);
             } finally {
                 setLoading(false);
             }
