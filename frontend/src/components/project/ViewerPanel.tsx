@@ -8,7 +8,8 @@ interface ViewerPanelProps {
 }
 
 export const ViewerPanel: React.FC<ViewerPanelProps> = ({ project }) => {
-    const API_FILE_URL = project.file_path ? `${import.meta.env.VITE_API_URL || 'http://localhost:8000'}/data/uploads/${project.file_path.split('/').pop()}` : undefined;
+    const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+    const API_FILE_URL = project.file_path ? `${API_BASE}/${project.file_path}` : undefined;
     const fileExt = project.file_path ? project.file_path.split('.').pop() : undefined;
 
     return (

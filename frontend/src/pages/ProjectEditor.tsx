@@ -3,6 +3,8 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { projectsApi } from '../projects/api';
 import { ArrowLeft, Upload, Save, Trash2, Pencil, Check, X, User, Phone, FileText } from 'lucide-react';
+import { ConfirmModal } from '../components/project/ConfirmModal';
+import { toast } from 'sonner';
 
 import { ParametersPanel } from '../components/project/ParametersPanel';
 import { ViewerPanel } from '../components/project/ViewerPanel';
@@ -40,6 +42,7 @@ export const ProjectEditor = () => {
     const [generatingAi, setGeneratingAi] = useState(false);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // Editable fields state
     const [editingField, setEditingField] = useState<string | null>(null);
@@ -113,9 +116,10 @@ export const ProjectEditor = () => {
             const res = await projectsApi.uploadFile(project.id, formData);
             setProject(res.data);
             updateProjectInList(res.data);
+            toast.success('Model uploaded successfully');
         } catch (err) {
             console.error(err);
-            alert("Failed to upload file");
+            toast.error('Failed to upload file');
         } finally {
             setUploading(false);
         }
@@ -134,9 +138,10 @@ export const ProjectEditor = () => {
             const res = await projectsApi.generateAi(project.id);
             setProject(res.data);
             updateProjectInList(res.data);
+            toast.success('AI descriptions generated');
         } catch (e) {
             console.error(e);
-            alert("Failed to generate AI data");
+            toast.error('Failed to generate AI descriptions');
         } finally {
             setGeneratingAi(false);
         }
@@ -152,16 +157,16 @@ export const ProjectEditor = () => {
 
     const handleDeleteProject = async () => {
         if (!project) return;
-        if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
         setDeleting(true);
         try {
             await projectsApi.deleteProject(project.id);
             removeProject(project.id);
+            toast.success('Project deleted');
             navigate('/dashboard');
         } catch (err) {
             console.error(err);
-            alert('Failed to delete project');
             setDeleting(false);
+            setShowDeleteModal(false);
         }
     };
 
@@ -345,7 +350,7 @@ export const ProjectEditor = () => {
 
                 <div className="flex items-center gap-3 w-full sm:w-auto">
                     <button
-                        onClick={handleDeleteProject}
+                        onClick={() => setShowDeleteModal(true)}
                         disabled={deleting}
                         className="bg-dark-700/50 hover:bg-red-500/10 border border-white/10 hover:border-red-500/30 text-gray-400 hover:text-red-400 px-3 py-2 rounded-xl flex items-center gap-2 transition-all cursor-pointer disabled:opacity-50"
                         title="Delete project"
@@ -381,6 +386,17 @@ export const ProjectEditor = () => {
                     onGenerateAi={handleGenerateAI}
                 />
             </div>
+
+            <ConfirmModal
+                isOpen={showDeleteModal}
+                title="Delete Project"
+                message="This will permanently delete this project and all its data. This action cannot be undone."
+                confirmText="Delete"
+                danger
+                loading={deleting}
+                onConfirm={handleDeleteProject}
+                onCancel={() => setShowDeleteModal(false)}
+            />
         </div>
     );
 };

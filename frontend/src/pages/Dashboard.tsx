@@ -5,6 +5,8 @@ import { projectsApi } from '../projects/api';
 import { authApi } from '../auth/api';
 import { Plus, Package, Calendar, LogOut, ChevronRight, Trash2, User } from 'lucide-react';
 import { CreateProjectModal } from '../components/project/CreateProjectModal';
+import { ConfirmModal } from '../components/project/ConfirmModal';
+import { toast } from 'sonner';
 
 export const Dashboard = () => {
     const { user, projects, setProjects, setCurrentProject, removeProject, logout } = useStore();
@@ -12,6 +14,7 @@ export const Dashboard = () => {
     const [loading, setLoading] = useState(true);
     const [creating, setCreating] = useState(false);
     const [showModal, setShowModal] = useState(false);
+    const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     useEffect(() => {
@@ -35,26 +38,33 @@ export const Dashboard = () => {
             const res = await projectsApi.createProject(data);
             setProjects([...projects, res.data]);
             setShowModal(false);
+            toast.success('Project created');
             handleOpenProject(res.data.id);
         } catch (err) {
             console.error(err);
+            toast.error('Failed to create project');
         } finally {
             setCreating(false);
         }
     };
 
-    const handleDeleteProject = async (e: React.MouseEvent, id: string) => {
+    const handleDeleteClick = (e: React.MouseEvent, id: string) => {
         e.stopPropagation();
-        if (!confirm('Are you sure you want to delete this project? This action cannot be undone.')) return;
-        setDeletingId(id);
+        setDeleteTarget(id);
+    };
+
+    const handleConfirmDelete = async () => {
+        if (!deleteTarget) return;
+        setDeletingId(deleteTarget);
         try {
-            await projectsApi.deleteProject(id);
-            removeProject(id);
+            await projectsApi.deleteProject(deleteTarget);
+            removeProject(deleteTarget);
+            toast.success('Project deleted');
         } catch (err) {
-            console.error(err);
-            alert('Failed to delete project');
+            toast.error('Failed to delete project');
         } finally {
             setDeletingId(null);
+            setDeleteTarget(null);
         }
     };
 
@@ -130,7 +140,7 @@ export const Dashboard = () => {
                             >
                                 {/* Delete button */}
                                 <button
-                                    onClick={(e) => handleDeleteProject(e, project.id)}
+                                    onClick={(e) => handleDeleteClick(e, project.id)}
                                     disabled={deletingId === project.id}
                                     className="absolute top-4 right-4 p-2 rounded-lg text-gray-500 hover:text-red-400 hover:bg-red-500/10 opacity-0 group-hover:opacity-100 transition-all cursor-pointer z-10 disabled:opacity-50"
                                     title="Delete project"
@@ -191,6 +201,17 @@ export const Dashboard = () => {
                 onClose={() => setShowModal(false)}
                 onSubmit={handleCreateProject}
                 loading={creating}
+            />
+
+            <ConfirmModal
+                isOpen={!!deleteTarget}
+                title="Delete Project"
+                message="This will permanently delete this project and all its data. This action cannot be undone."
+                confirmText="Delete"
+                danger
+                loading={!!deletingId}
+                onConfirm={handleConfirmDelete}
+                onCancel={() => setDeleteTarget(null)}
             />
         </div>
     );
