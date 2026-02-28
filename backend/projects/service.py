@@ -3,6 +3,8 @@ import schemas
 from exceptions import ProjectNotFoundException
 from .repo import ProjectRepository
 
+from typing import List
+
 class ProjectService:
     def __init__(self, repository: ProjectRepository):
         self.repository = repository
