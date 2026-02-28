@@ -23,18 +23,27 @@ A full-stack 3D model calculator and production cost analyzer.
 ## Getting Started
 
 ### 1. Configure Environment
-1. **OpenAI API Key**: Add your valid OpenAI API key to `backend/.env`.
-2. **Google OAuth2**: Set up a Google Cloud Project with an OAuth Consent Screen and Web Application Credentials. Add your Authorized origin as `http://localhost:3000`. 
-   
-Place both keys in `backend/.env` like so:
+
+Create `backend/.env` with the following:
+
 ```
-OPENAI_API_KEY=sk-your-key-here
-GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+SECRET_KEY=your-secret-key
+REDIS_URL=redis://redis:6379/0
 ```
 
-3. **Frontend Env**: Ensure the Google Client ID is also in `frontend/.env` to enable the login button popup:
+The following keys are **optional** — the app works without them but with limited features:
+
+| Key | Where | Without it |
+|-----|-------|------------|
+| `OPENAI_API_KEY` | `backend/.env` | AI description generation is disabled |
+| `GOOGLE_CLIENT_ID` | `backend/.env` + `frontend/.env` as `VITE_GOOGLE_CLIENT_ID` | Google OAuth login is disabled; email/password login still works |
+
+Example full `backend/.env`:
 ```
-VITE_GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
+SECRET_KEY=your-secret-key
+REDIS_URL=redis://redis:6379/0
+OPENAI_API_KEY=sk-your-key-here
+GOOGLE_CLIENT_ID=your-google-client-id.apps.googleusercontent.com
 ```
 
 ### 2. Run the Application
