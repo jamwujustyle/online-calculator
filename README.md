@@ -48,4 +48,4 @@ docker compose up --build
 - **Backend API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 
 ### Testing
-There is a sample `cube.obj` in the `samples/` directory which you can upload after creating a project.
+Upload any `.stl`, `.obj`, or `.3mf` file after creating a project to calculate costs.
