@@ -12,7 +12,6 @@ export const Login = () => {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
-    const setToken = useStore(state => state.setToken);
     const setUser = useStore(state => state.setUser);
     const navigate = useNavigate();
 
@@ -30,19 +29,15 @@ export const Login = () => {
             formData.append('username', email);
             formData.append('password', password);
 
-            const res = await authApi.login(formData as any);
-            const token = res.data.access_token;
-            setToken(token);
+            await authApi.login(formData as any);
 
-            // Fetch user info with the new token
-            // The interceptor will handle the token if we set it in the store first, 
-            // but for safety in this direct flow we can use the token from res
+            // Cookie is set by the backend — fetch user data
             const userRes = await authApi.getMe();
             setUser(userRes.data);
 
             navigate('/dashboard');
         } catch (err: any) {
-            setError(err.response?.data?.detail || 'Authentication failed');
+            setError(err.response?.data?.detail || err.response?.data?.message || 'Authentication failed');
         } finally {
             setLoading(false);
         }
@@ -53,9 +48,9 @@ export const Login = () => {
             setError('');
             setLoading(true);
             try {
-                const res = await authApi.googleLogin(tokenResponse.access_token);
-                setToken(res.data.access_token);
+                await authApi.googleLogin(tokenResponse.access_token);
 
+                // Cookie is set by the backend — fetch user data
                 const userRes = await authApi.getMe();
                 setUser(userRes.data);
 

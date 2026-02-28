@@ -11,11 +11,12 @@ export const useStore = create<AppState>()(
             ...createAuthSlice(set),
             ...createProjectsSlice(set),
             logout: () => {
-                set({ token: null, user: null, projects: [], currentProjectId: null });
+                set({ user: null, projects: [], currentProjectId: null });
             },
         }),
         {
             name: '3d-calc-storage',
+            partialize: (state) => ({ user: state.user }),
         }
     )
 );

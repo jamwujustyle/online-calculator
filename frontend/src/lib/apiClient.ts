@@ -5,14 +5,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
 export const apiClient = axios.create({
     baseURL: API_URL,
-});
-
-apiClient.interceptors.request.use((config) => {
-    const token = useStore.getState().token;
-    if (token && config.headers) {
-        config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
+    withCredentials: true,
 });
 
 apiClient.interceptors.response.use(

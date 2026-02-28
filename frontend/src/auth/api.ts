@@ -5,4 +5,5 @@ export const authApi = {
     register: (data: any) => apiClient.post('/auth/register', data),
     getMe: () => apiClient.get('/auth/me'),
     googleLogin: (token: string) => apiClient.post('/auth/google', { token }),
+    logout: () => apiClient.post('/auth/logout'),
 };

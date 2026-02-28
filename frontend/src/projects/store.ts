@@ -24,6 +24,7 @@ export interface ProjectsState {
     setProjects: (projects: Project[]) => void;
     setCurrentProject: (id: string | null) => void;
     updateProjectInList: (project: Project) => void;
+    removeProject: (id: string) => void;
     clearProjects: () => void;
 }
 
@@ -34,6 +35,9 @@ export const createProjectsSlice = (set: any) => ({
     setCurrentProject: (id: string | null) => set({ currentProjectId: id }),
     updateProjectInList: (project: Project) => set((state: any) => ({
         projects: state.projects.map((p: any) => p.id === project.id ? project : p)
+    })),
+    removeProject: (id: string) => set((state: any) => ({
+        projects: state.projects.filter((p: any) => p.id !== id)
     })),
     clearProjects: () => set({ projects: [], currentProjectId: null }),
 });
