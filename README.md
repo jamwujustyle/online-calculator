@@ -12,7 +12,11 @@ A full-stack 3D model calculator and production cost analyzer.
 
 ## Tech Stack
 - Frontend: React 18, Vite, TailwindCSS v4, Zustand, Three.js, React Router
+    - **Architecture**: Domain-driven structure with dedicated API clients and composable store slices.
 - Backend API: Python 3.13, FastAPI, SQLAlchemy (SQLite), Pydantic
+    - **Architecture**: 3-layer pattern (Repository, Service, Route) for strict separation of concerns.
+    - **Exception Handling**: Centralized domain-specific exceptions with standardized JSON error reporting.
+    - **OAuth**: Robust Google verification supporting both ID and Access tokens with auto-fallback.
 - Background Worker: Celery, Redis, Trimesh
 - Deployment: Docker Compose
 
