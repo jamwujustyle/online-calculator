@@ -1,10 +1,11 @@
-from datetime import timedelta
-from typing import Optional
-from jose import jwt
-from fastapi import HTTPException, status
-from . import auth_utils
+from jose import jwt, JWTError
+from google.oauth2 import id_token
+from google.auth.transport import requests
+from config import settings
 import schemas
+from exceptions import AuthException, AlreadyExistsException
 from .repo import AuthRepository
+import models
 
 class AuthService:
     def __init__(self, repository: AuthRepository):
@@ -12,10 +13,8 @@ class AuthService:
 
     def authenticate_user(self, email: str, password: str):
         user = self.repository.get_user_by_email(email)
-        if not user:
-            return False
-        if not auth_utils.verify_password(password, user.hashed_password):
-            return False
+        if not user or not auth_utils.verify_password(password, user.hashed_password):
+            raise AuthException("Incorrect username or password")
         return user
 
     def create_access_token(self, email: str):
@@ -25,6 +24,8 @@ class AuthService:
         )
 
     def register_user(self, user_data: schemas.UserCreate):
+        if self.repository.get_user_by_email(user_data.email):
+            raise AlreadyExistsException("Email already registered")
         hashed_password = auth_utils.get_password_hash(user_data.password)
         return self.repository.create_user(user_data.email, hashed_password)
 
@@ -33,3 +34,34 @@ class AuthService:
 
     def create_google_user(self, email: str):
         return self.repository.create_user(email, "")
+
+    def verify_token(self, token: str) -> models.User:
+        try:
+            payload = jwt.decode(token, auth_utils.SECRET_KEY, algorithms=[auth_utils.ALGORITHM])
+            email: str = payload.get("sub")
+            if email is None:
+                raise AuthException("Could not validate credentials")
+        except JWTError:
+            raise AuthException("Could not validate credentials")
+        
+        user = self.get_user_by_email(email=email)
+        if user is None:
+            raise AuthException("User not found")
+        return user
+
+    def authenticate_google(self, token: str) -> models.User:
+        try:
+            idinfo = id_token.verify_oauth2_token(
+                token, requests.Request(), settings.google_client_id
+            )
+            email = idinfo.get("email")
+            if not email:
+                raise AuthException("Invalid Google token: No email found")
+
+            user = self.get_user_by_email(email=email)
+            if not user:
+                user = self.create_google_user(email)
+
+            return user
+        except ValueError:
+            raise AuthException("Invalid Google token")

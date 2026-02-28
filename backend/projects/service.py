@@ -23,9 +23,7 @@ class ProjectService:
 
     def update_project_params(self, project_id: str, user_id: str, params: schemas.ProjectUpdateParams) -> models.Project:
         project = self.get_project(project_id, user_id)
-        
-        if params.production_params is not None:
-            project.production_params = params.production_params
+        project.production_params = params.model_dump()
         if params.calculated_results is not None:
             project.calculated_results = params.calculated_results
             
@@ -37,9 +35,8 @@ class ProjectService:
         project.file_status = "processing"
         return self.repository.update_project(project)
 
-    def update_ai_texts(self, project_id: str, user_id: str, ai_description: str, ai_commercial_text: Optional[str] = None) -> models.Project:
+    def update_ai_texts(self, project_id: str, user_id: str, description: str, commercial_text: str) -> models.Project:
         project = self.get_project(project_id, user_id)
-        project.ai_description = ai_description
-        if ai_commercial_text:
-            project.ai_commercial_text = ai_commercial_text
+        project.ai_description = description
+        project.ai_commercial_text = commercial_text
         return self.repository.update_project(project)
