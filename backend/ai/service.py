@@ -12,7 +12,7 @@ class AIService:
         except Exception:
             self.client = None
 
-    def generate_ai_texts(self, project: models.Project) -> Tuple[Optional[str], Optional[str]]:
+    def generate_ai_texts(self, project: models.Project, lang: str = 'en') -> Tuple[Optional[str], Optional[str]]:
         """
         Generates AI texts for a project based on its parameters.
         Returns a tuple of (description: Optional[str], commercial_text: Optional[str]).
@@ -30,9 +30,11 @@ class AIService:
         material = project.production_params.get("material", "Unknown")
         technology = project.production_params.get("technology", "Unknown")
         
-        # we put static content in the beginning to enable prefix caching
-        system_prompt = """[3D_CALC_STATIC_INSTRUCTIONS]
-Assistant for industrial 3D printing. Generate content exactly in this structure:
+        target_language = "Russian" if lang == "ru" else "English"
+        
+        # we put static content in the beginning to enable prefix caching. we can keep lang as there are only counter options
+        system_prompt = f"""[3D_CALC_STATIC_INSTRUCTIONS]
+Assistant for industrial 3D printing. Generate content exactly in this structure AND STRICTLY IN {target_language.upper()}:
 1. Reasoning (max 50 chars, single line)
 2. Technical Description (single paragraph)
 3. Commercial Pitch (single paragraph)
@@ -40,7 +42,7 @@ Assistant for industrial 3D printing. Generate content exactly in this structure
 Output MUST follow this format strictly with no extra text or labels.
 """
         # Dynamic data passed as user prompt
-        user_data = f"""DATA:
+        user_data = f"""DATA (Output in {target_language}):
 - Dim: {dim}
 - Vol: {vol}
 - Poly: {poly}

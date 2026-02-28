@@ -61,12 +61,12 @@ async def upload_file(project_id: str, file: UploadFile = File(...), project_ser
     return updated_project
 
 @router.post("/{project_id}/generate-ai", response_model=schemas.Project)
-def generate_project_ai(project_id: str, project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):
+def generate_project_ai(project_id: str, lang: str = "en", project_service: ProjectService = Depends(get_project_service), current_user: models.User = Depends(get_current_user)):
     project = project_service.get_project(project_id, current_user.id)
         
     from ai.service import AIService
     ai_service = AIService()
-    description, commercial_text = ai_service.generate_ai_texts(project)
+    description, commercial_text = ai_service.generate_ai_texts(project, lang)
     
     if description:
         return project_service.update_ai_texts(project_id, current_user.id, description, commercial_text)
