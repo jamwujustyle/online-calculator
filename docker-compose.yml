@@ -11,9 +11,9 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     container_name: 3dcalc-api
-    command: uvicorn main:app --host 0.0.0.0 --port 8001 --reload
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
     ports:
-      - "8001:8001"
+      - "8000:8000"
     volumes:
       - ./backend:/app
       - ./data:/data
@@ -48,4 +48,4 @@ services:
       - ./frontend:/app
       - /app/node_modules
     environment:
-      - VITE_API_URL=http://localhost:8001
+      - VITE_API_URL=http://localhost:8000
