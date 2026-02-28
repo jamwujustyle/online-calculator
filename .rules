@@ -1,0 +1,8 @@
+# Custom Agent Rules
+
+1. **Docker Execution**: Do NOT automatically run `docker compose build` or `docker compose up`. Assume the application environment is already running unless the user explicitly requests a build or startup.
+2. **Version Control**: Do NOT run `git commit`, `git push`, or any version control mutations on the user's behalf without explicit instruction. 
+3. **Design Principles**: Always take a **mobile-first approach** when creating or updating UI components, ensuring responsiveness across all device sizes.
+4. **Code Architecture**: strictly adhere to **SOLID principles** (Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, Dependency Inversion) when writing or refactoring code. Keep functions pure and classes focused.
+5. **Autonomy Limits**: Do not modify files outside the direct scope of the user's request. Always ask clarifying questions rather than completely rewriting large, unmentioned components. 
+6. **Destructive Actions**: Do not delete configurations or sample data files arbitrarily. 
