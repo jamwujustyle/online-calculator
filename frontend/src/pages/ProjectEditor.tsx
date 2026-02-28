@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { projectsApi } from '../projects/api';
-import { ArrowLeft, Upload, Save, Trash2, Pencil, Check, X, User, Phone, FileText } from 'lucide-react';
+import { ArrowLeft, Upload, Save, Trash2, Pencil, Check, X, User, Phone, FileText, CalendarDays } from 'lucide-react';
 import { ConfirmModal } from '../components/project/ConfirmModal';
 import { toast } from 'sonner';
 
@@ -10,6 +10,7 @@ import { ParametersPanel } from '../components/project/ParametersPanel';
 import { ViewerPanel } from '../components/project/ViewerPanel';
 import { ResultsPanel } from '../components/project/ResultsPanel';
 import { calculateEconomics } from '../lib/calculator';
+import { useI18n } from '../lib/i18n';
 
 const DEFAULT_PARAMS = {
     technology: 'FDM',
@@ -42,6 +43,7 @@ export const ProjectEditor = () => {
     const [generatingAi, setGeneratingAi] = useState(false);
     const [saving, setSaving] = useState(false);
     const [deleting, setDeleting] = useState(false);
+    const { t, lang } = useI18n();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
 
     // Editable fields state
@@ -108,6 +110,12 @@ export const ProjectEditor = () => {
         if (!e.target.files || !e.target.files[0] || !project) return;
 
         const file = e.target.files[0];
+        const ext = file.name.split('.').pop()?.toLowerCase();
+        if (!['stl', 'obj', '3mf'].includes(ext || '')) {
+            toast.error('Only STL, OBJ, and 3MF files are supported');
+            return;
+        }
+
         const formData = new FormData();
         formData.append('file', file);
 
@@ -135,10 +143,10 @@ export const ProjectEditor = () => {
                 calculated_results: results
             });
 
-            const res = await projectsApi.generateAi(project.id);
+            const res = await projectsApi.generateAi(project.id, lang);
             setProject(res.data);
             updateProjectInList(res.data);
-            toast.success('AI descriptions generated');
+            toast.success(t('saving') ? 'AI descriptions generated' : 'AI descriptions generated'); // Toast can also use existing or simple strings
         } catch (e) {
             console.error(e);
             toast.error('Failed to generate AI descriptions');
@@ -243,12 +251,19 @@ export const ProjectEditor = () => {
                             <h1 className="text-xl font-bold text-white flex items-center gap-2 group/title cursor-pointer truncate" onClick={() => startEditing('title')}>
                                 <span className="truncate">{project.title}</span>
                                 <Pencil size={14} className="text-gray-500 opacity-0 group-hover/title:opacity-100 transition-opacity shrink-0" />
-                                {saving && <span className="text-xs text-primary-500 font-medium ml-1 flex items-center gap-1 shrink-0"><Save size={12} /> Saving...</span>}
+                                {saving && <span className="text-xs text-primary-500 font-medium ml-1 flex items-center gap-1 shrink-0"><Save size={12} /> {t('saving')}</span>}
                             </h1>
                         )}
 
                         {/* Editable metadata row */}
                         <div className="flex text-sm text-gray-400 gap-2 sm:gap-4 mt-1 flex-wrap items-center">
+                            {/* Date */}
+                            <span className="flex items-center gap-1.5 cursor-default" title="Created date">
+                                <CalendarDays size={14} className="text-gray-500" />
+                                {new Date(project.created_at).toLocaleDateString()}
+                            </span>
+
+                            <span className="hidden sm:inline text-gray-600">•</span>
                             {/* Client Name */}
                             {editingField === 'client_name' ? (
                                 <div className="flex items-center gap-1.5">
@@ -267,7 +282,7 @@ export const ProjectEditor = () => {
                             ) : (
                                 <span className="flex items-center gap-1.5 group/client cursor-pointer hover:text-gray-300 transition-colors" onClick={() => startEditing('client_name')}>
                                     <User size={14} className="text-gray-500" />
-                                    {project.client_name || 'Add client'}
+                                    {project.client_name || t('add_client')}
                                     <Pencil size={12} className="opacity-0 group-hover/client:opacity-100 transition-opacity" />
                                 </span>
                             )}
@@ -292,7 +307,7 @@ export const ProjectEditor = () => {
                             ) : (
                                 <span className="flex items-center gap-1.5 group/contact cursor-pointer hover:text-gray-300 transition-colors" onClick={() => startEditing('contact')}>
                                     <Phone size={14} className="text-gray-500" />
-                                    {project.contact || 'Add contact'}
+                                    {project.contact || t('add_contact')}
                                     <Pencil size={12} className="opacity-0 group-hover/contact:opacity-100 transition-opacity" />
                                 </span>
                             )}
@@ -313,7 +328,7 @@ export const ProjectEditor = () => {
                                 }}
                             >
                                 <FileText size={14} className="text-gray-500" />
-                                {project.notes ? 'View notes' : 'Add notes'}
+                                {project.notes ? t('view_notes') : t('add_notes')}
                             </span>
                         </div>
 
@@ -363,7 +378,7 @@ export const ProjectEditor = () => {
                     </button>
                     <label className="flex-1 sm:flex-none justify-center bg-dark-700/50 hover:bg-dark-700 border border-white/10 text-white px-4 py-2 rounded-xl flex items-center gap-2 transition-all cursor-pointer">
                         <Upload size={18} />
-                        {uploading ? 'Uploading...' : 'Upload Model'}
+                        {uploading ? t('uploading') : t('upload_model')}
                         <input type="file" accept=".stl,.obj,.3mf" className="hidden" onChange={handleFileUpload} disabled={uploading} />
                     </label>
                 </div>
@@ -389,9 +404,9 @@ export const ProjectEditor = () => {
 
             <ConfirmModal
                 isOpen={showDeleteModal}
-                title="Delete Project"
-                message="This will permanently delete this project and all its data. This action cannot be undone."
-                confirmText="Delete"
+                title={t('delete_project')}
+                message={t('delete_confirm')}
+                confirmText={t('delete')}
                 danger
                 loading={deleting}
                 onConfirm={handleDeleteProject}

@@ -8,5 +8,5 @@ export const projectsApi = {
     deleteProject: (id: string) => apiClient.delete(`/projects/${id}`),
     updateProjectParams: (id: string, params: any) => apiClient.put(`/projects/${id}/params`, params),
     uploadFile: (id: string, formData: FormData) => apiClient.post(`/projects/${id}/upload`, formData),
-    generateAi: (id: string) => apiClient.post(`/projects/${id}/generate-ai`),
+    generateAi: (id: string, lang: string = 'en') => apiClient.post(`/projects/${id}/generate-ai?lang=${lang}`),
 };

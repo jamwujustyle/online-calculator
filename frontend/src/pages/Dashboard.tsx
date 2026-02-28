@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { useStore } from '../store';
 import { projectsApi } from '../projects/api';
 import { authApi } from '../auth/api';
-import { Plus, Package, Calendar, LogOut, ChevronRight, Trash2, User } from 'lucide-react';
+import { Plus, Package, Calendar, LogOut, ChevronRight, Trash2, User, Globe } from 'lucide-react';
 import { CreateProjectModal } from '../components/project/CreateProjectModal';
 import { ConfirmModal } from '../components/project/ConfirmModal';
 import { toast } from 'sonner';
+import { useI18n } from '../lib/i18n';
 
 export const Dashboard = () => {
     const { user, projects, setProjects, setCurrentProject, removeProject, logout } = useStore();
@@ -16,6 +17,7 @@ export const Dashboard = () => {
     const [showModal, setShowModal] = useState(false);
     const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const { lang, setLang, t } = useI18n();
 
     useEffect(() => {
         fetchProjects();
@@ -90,9 +92,9 @@ export const Dashboard = () => {
                     <div>
                         <h1 className="text-3xl font-bold text-white flex items-center gap-3">
                             <Package className="text-primary-500" />
-                            My Projects
+                            {t('dashboard_title')}
                         </h1>
-                        <p className="text-gray-400 mt-2">Welcome back, {user?.email}</p>
+                        <p className="text-gray-400 mt-2">{t('welcome_back')} {user?.email}</p>
                     </div>
 
                     <div className="flex gap-3 w-full sm:w-auto">
@@ -101,7 +103,15 @@ export const Dashboard = () => {
                             className="flex-1 sm:flex-none bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 text-white px-6 py-2.5 rounded-xl flex items-center justify-center gap-2 font-medium transition-all shadow-lg shadow-primary-500/20 cursor-pointer"
                         >
                             <Plus size={20} />
-                            New Project
+                            {t('new_project')}
+                        </button>
+                        <button
+                            onClick={() => setLang(lang === 'en' ? 'ru' : 'en')}
+                            className="bg-dark-800 hover:bg-gray-800 border border-white/10 text-gray-300 px-3 py-2.5 rounded-xl flex items-center gap-1.5 transition-all cursor-pointer text-sm font-medium"
+                            title={lang === 'en' ? 'Переключить на русский' : 'Switch to English'}
+                        >
+                            <Globe size={16} />
+                            {lang.toUpperCase()}
                         </button>
                         <button
                             onClick={handleLogout}

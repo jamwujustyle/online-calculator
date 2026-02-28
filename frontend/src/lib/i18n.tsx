@@ -6,6 +6,7 @@ const translations = {
     en: {
         // Dashboard
         dashboard_title: 'My Projects',
+        welcome_back: 'Welcome back,',
         new_project: 'New Project',
         no_projects: 'No projects yet',
         no_projects_desc: 'Create your first project to start calculating costs.',
@@ -25,7 +26,12 @@ const translations = {
 
         // Editor
         upload_model: 'Upload Model',
+        uploading: 'Uploading...',
         view_notes: 'View notes',
+        add_notes: 'Add notes',
+        add_client: 'Add client',
+        add_contact: 'Add contact',
+        saving: 'Saving...',
         production_setup: 'Production Setup',
         material_tech: 'Material & Tech',
         technology: 'Technology',
@@ -64,14 +70,22 @@ const translations = {
 
         // Viewer
         model_specs: 'Model Specs',
+        dim_x: 'Dim X:',
+        dim_y: 'Dim Y:',
+        dim_z: 'Dim Z:',
+        volume: 'Volume:',
+        polygons: 'Polygons:',
         processing: 'Analyzing 3D geometry...',
+        waiting_processing: 'Waiting for processing...',
         no_model: 'No 3D model uploaded yet',
         failed_model: 'Failed to process model',
         viewer_hint: 'Left Click: Rotate | Right Click: Pan',
+        reset_view: 'Reset view',
     },
     ru: {
         // Dashboard
         dashboard_title: 'Мои проекты',
+        welcome_back: 'С возвращением,',
         new_project: 'Новый проект',
         no_projects: 'Проектов пока нет',
         no_projects_desc: 'Создайте первый проект для начала расчётов.',
@@ -91,7 +105,12 @@ const translations = {
 
         // Editor
         upload_model: 'Загрузить модель',
-        view_notes: 'Заметки',
+        uploading: 'Загрузка...',
+        view_notes: 'Смотреть заметки',
+        add_notes: 'Добавить заметки',
+        add_client: 'Добавить клиента',
+        add_contact: 'Добавить контакт',
+        saving: 'Сохранение...',
         production_setup: 'Параметры производства',
         material_tech: 'Материал и технология',
         technology: 'Технология',
@@ -130,10 +149,17 @@ const translations = {
 
         // Viewer
         model_specs: 'Параметры модели',
+        dim_x: 'Размер X:',
+        dim_y: 'Размер Y:',
+        dim_z: 'Размер Z:',
+        volume: 'Объем:',
+        polygons: 'Полигоны:',
         processing: 'Анализ 3D-геометрии...',
+        waiting_processing: 'Ожидание обработки...',
         no_model: '3D-модель ещё не загружена',
         failed_model: 'Ошибка обработки модели',
         viewer_hint: 'ЛКМ: Вращение | ПКМ: Перемещение',
+        reset_view: 'Сбросить вид',
     },
 } as const;
 
