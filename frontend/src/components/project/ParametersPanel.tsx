@@ -65,13 +65,18 @@ export const ParametersPanel: React.FC<ParametersPanelProps> = ({ params, onChan
 
                     <div className="grid grid-cols-2 gap-3">
                         <div>
-                            <label className="block text-xs text-gray-400 mb-1">Time (Hrs)</label>
+                            <label className="block text-xs text-gray-400 mb-1">Print Time (Hrs)</label>
                             <input type="number" step="0.1" name="printTimeHours" value={params.printTimeHours} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
                         </div>
                         <div>
                             <label className="block text-xs text-gray-400 mb-1">Post-proc (Hrs)</label>
                             <input type="number" step="0.1" name="postProcessHours" value={params.postProcessHours} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
                         </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs text-gray-400 mb-1">Modeling Prep (Mins)</label>
+                        <input type="number" step="1" name="modelPrepMins" value={params.modelPrepMins} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
                     </div>
                 </div>
 
@@ -96,6 +101,25 @@ export const ParametersPanel: React.FC<ParametersPanelProps> = ({ params, onChan
                             <label className="block text-xs text-gray-400 mb-1">Tax (%)</label>
                             <input type="number" name="taxRatePercent" value={params.taxRatePercent} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
                         </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div>
+                            <label className="block text-xs text-gray-400 mb-1">Amortization ($/hr)</label>
+                            <input type="number" step="0.1" name="amortizationCostPerHour" value={params.amortizationCostPerHour} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
+                        </div>
+                        <div>
+                            <label className="block text-xs text-gray-400 mb-1">Electricity ($/hr)</label>
+                            <input type="number" step="0.1" name="electricityCostPerHour" value={params.electricityCostPerHour} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm" />
+                        </div>
+                    </div>
+                    <div>
+                        <label className="block text-xs text-gray-400 mb-1">Currency</label>
+                        <select name="currency" value={params.currency} onChange={onChange} className="w-full bg-dark-800 border border-gray-700 rounded-lg px-3 py-2 text-white outline-none focus:border-primary-500 text-sm">
+                            <option value="USD">USD ($)</option>
+                            <option value="EUR">EUR (€)</option>
+                            <option value="RUB">RUB (₽)</option>
+                            <option value="GBP">GBP (£)</option>
+                        </select>
                     </div>
                 </div>
 

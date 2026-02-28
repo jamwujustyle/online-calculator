@@ -2,6 +2,10 @@ import React from 'react';
 import { Calculator, Box, Zap, CreditCard, Sparkles } from 'lucide-react';
 import { Project } from '../../store';
 
+const CURRENCY_SYMBOLS: Record<string, string> = {
+    USD: '$', EUR: '€', RUB: '₽', GBP: '£',
+};
+
 interface ResultsPanelProps {
     project: Project;
     results: any | null;
@@ -11,6 +15,8 @@ interface ResultsPanelProps {
 }
 
 export const ResultsPanel: React.FC<ResultsPanelProps> = ({ project, results, params, generatingAi, onGenerateAi }) => {
+    const sym = CURRENCY_SYMBOLS[params.currency] || '$';
+
     return (
         <div className="w-full lg:w-96 lg:border-l border-t lg:border-t-0 border-gray-800 bg-dark-900/50 flex flex-col shrink-0 min-h-[400px]">
             <div className="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-6">
@@ -30,7 +36,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ project, results, pa
                                         <p className="text-sm font-medium text-white">{results.weightGrams.toFixed(1)}g total</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-semibold text-white">${results.materialCost.toFixed(2)}</span>
+                                <span className="text-lg font-semibold text-white">{sym}{results.materialCost.toFixed(2)}</span>
                             </div>
 
                             <div className="bg-dark-800 p-4 rounded-xl border border-gray-700 flex items-center justify-between">
@@ -41,7 +47,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ project, results, pa
                                         <p className="text-sm font-medium text-white">{params.printTimeHours} hrs</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-semibold text-white">${(results.printCost + results.powerCost).toFixed(2)}</span>
+                                <span className="text-lg font-semibold text-white">{sym}{(results.printCost + results.powerCost).toFixed(2)}</span>
                             </div>
 
                             <div className="bg-dark-800 p-4 rounded-xl border border-gray-700 flex items-center justify-between">
@@ -52,7 +58,7 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ project, results, pa
                                         <p className="text-sm font-medium text-white">{params.postProcessHours}h post</p>
                                     </div>
                                 </div>
-                                <span className="text-lg font-semibold text-white">${results.laborCost.toFixed(2)}</span>
+                                <span className="text-lg font-semibold text-white">{sym}{results.laborCost.toFixed(2)}</span>
                             </div>
                         </div>
 
@@ -61,17 +67,17 @@ export const ResultsPanel: React.FC<ResultsPanelProps> = ({ project, results, pa
                             <div className="flex justify-between items-end mb-4">
                                 <div>
                                     <p className="text-sm text-primary-400 font-medium mb-1">Unit Selling Price</p>
-                                    <h3 className="text-4xl font-bold text-white">${results.totalUnitPrice.toFixed(2)}</h3>
+                                    <h3 className="text-4xl font-bold text-white">{sym}{results.totalUnitPrice.toFixed(2)}</h3>
                                 </div>
                                 <div className="text-right">
                                     <p className="text-xs text-gray-400">Profit / unit</p>
-                                    <p className="text-sm font-semibold text-green-400">${results.profitPerUnit.toFixed(2)}</p>
+                                    <p className="text-sm font-semibold text-green-400">{sym}{results.profitPerUnit.toFixed(2)}</p>
                                 </div>
                             </div>
 
                             <div className="bg-dark-900 p-3 rounded-lg border border-gray-800 flex justify-between items-center">
                                 <span className="text-sm text-gray-400">Batch Total (x{params.quantity})</span>
-                                <span className="text-lg font-bold text-white">${results.finalBatchPrice.toFixed(2)}</span>
+                                <span className="text-lg font-bold text-white">{sym}{results.finalBatchPrice.toFixed(2)}</span>
                             </div>
                         </div>
 

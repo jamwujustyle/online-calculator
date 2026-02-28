@@ -7,6 +7,7 @@ import { Login } from './pages/Login';
 import { Dashboard } from './pages/Dashboard';
 import { ProjectEditor } from './pages/ProjectEditor';
 import { Toaster } from 'sonner';
+import { I18nProvider } from './lib/i18n';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
     const user = useStore((state) => state.user);
@@ -44,35 +45,37 @@ function App() {
     }
 
     return (
-        <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
-            <Toaster
-                position="bottom-right"
-                toastOptions={{
-                    style: {
-                        background: 'rgba(31, 41, 55, 0.9)',
-                        backdropFilter: 'blur(12px)',
-                        border: '1px solid rgba(255,255,255,0.1)',
-                        color: '#fff',
-                    },
-                }}
-            />
-            <BrowserRouter>
-                <Routes>
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/dashboard" element={
-                        <ProtectedRoute>
-                            <Dashboard />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="/project/:id" element={
-                        <ProtectedRoute>
-                            <ProjectEditor />
-                        </ProtectedRoute>
-                    } />
-                    <Route path="*" element={<Navigate to="/dashboard" />} />
-                </Routes>
-            </BrowserRouter>
-        </GoogleOAuthProvider>
+        <I18nProvider>
+            <GoogleOAuthProvider clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}>
+                <Toaster
+                    position="bottom-right"
+                    toastOptions={{
+                        style: {
+                            background: 'rgba(31, 41, 55, 0.9)',
+                            backdropFilter: 'blur(12px)',
+                            border: '1px solid rgba(255,255,255,0.1)',
+                            color: '#fff',
+                        },
+                    }}
+                />
+                <BrowserRouter>
+                    <Routes>
+                        <Route path="/login" element={<Login />} />
+                        <Route path="/dashboard" element={
+                            <ProtectedRoute>
+                                <Dashboard />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="/project/:id" element={
+                            <ProtectedRoute>
+                                <ProjectEditor />
+                            </ProtectedRoute>
+                        } />
+                        <Route path="*" element={<Navigate to="/dashboard" />} />
+                    </Routes>
+                </BrowserRouter>
+            </GoogleOAuthProvider>
+        </I18nProvider>
     );
 }
 

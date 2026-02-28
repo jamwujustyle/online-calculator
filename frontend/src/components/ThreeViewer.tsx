@@ -7,6 +7,8 @@ import * as THREE from 'three';
 import { STLLoader } from 'three/examples/jsm/loaders/STLLoader';
 // @ts-ignore
 import { OBJLoader } from 'three/examples/jsm/loaders/OBJLoader';
+// @ts-ignore
+import { ThreeMFLoader } from 'three/examples/jsm/loaders/3MFLoader';
 import { useLoader } from '@react-three/fiber';
 
 interface ThreeViewerProps {
@@ -16,17 +18,11 @@ interface ThreeViewerProps {
 }
 
 const Model = ({ url, ext }: { url: string, ext: string }) => {
-    // We use useMemo to conditionally select loader, but Fiber's useLoader needs a stable loader reference.
-    // For simplicity in this demo, since STL is most common, we'll try to load STL. 
-    // A production app would have a more complex loader registry.
-
     if (!url) return null;
 
     try {
         if (ext === 'stl') {
             const geometry = useLoader(STLLoader as any, url) as unknown as THREE.BufferGeometry;
-
-            // Auto center and scale is handled by <Stage> below, but we ensure material
             return (
                 <mesh geometry={geometry}>
                     <meshStandardMaterial color="#3b82f6" roughness={0.4} metalness={0.1} />
@@ -34,10 +30,20 @@ const Model = ({ url, ext }: { url: string, ext: string }) => {
             );
         } else if (ext === 'obj') {
             const obj = useLoader(OBJLoader as any, url) as unknown as THREE.Group;
-
             return (
                 <group>
                     {obj.children.map((child: any, i) => (
+                        <mesh key={i} geometry={child.geometry}>
+                            <meshStandardMaterial color="#3b82f6" roughness={0.4} metalness={0.1} />
+                        </mesh>
+                    ))}
+                </group>
+            );
+        } else if (ext === '3mf') {
+            const group = useLoader(ThreeMFLoader as any, url) as unknown as THREE.Group;
+            return (
+                <group>
+                    {group.children.map((child: any, i) => (
                         <mesh key={i} geometry={child.geometry}>
                             <meshStandardMaterial color="#3b82f6" roughness={0.4} metalness={0.1} />
                         </mesh>
