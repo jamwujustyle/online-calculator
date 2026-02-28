@@ -1,3 +1,5 @@
+import os
+import shutil
 import models
 import schemas
 from exceptions import ProjectNotFoundException
@@ -50,4 +52,8 @@ class ProjectService:
 
     def delete_project(self, project_id: str, user_id: str) -> None:
         project = self.get_project(project_id, user_id)
+        # Clean up uploaded files from disk
+        upload_dir = os.path.join("uploads", project_id)
+        if os.path.exists(upload_dir):
+            shutil.rmtree(upload_dir, ignore_errors=True)
         self.repository.delete_project(project)
