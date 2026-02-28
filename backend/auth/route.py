@@ -37,7 +37,7 @@ class GoogleAuthRequest(BaseModel):
     token: str
 
 @router.post("/google", response_model=schemas.Token)
-def google_auth(request: GoogleAuthRequest, auth_service: AuthService = Depends(get_auth_service)):
-    user = auth_service.authenticate_google(request.token)
+async def google_auth(request: GoogleAuthRequest, auth_service: AuthService = Depends(get_auth_service)):
+    user = await auth_service.authenticate_google(request.token)
     access_token = auth_service.create_access_token(user.email)
     return {"access_token": access_token, "token_type": "bearer"}
