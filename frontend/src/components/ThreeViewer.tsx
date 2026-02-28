@@ -22,34 +22,33 @@ interface ThreeViewerProps {
  * After the model loads, fit the camera so the model fills the viewport,
  * then save OrbitControls state so "reset" returns here.
  */
-const CameraFramer = ({ controlsRef }: { controlsRef: React.RefObject<any> }) => {
-    const { scene, camera } = useThree();
+const CameraFramer = ({ controlsRef, groupRef }: { controlsRef: React.RefObject<any>, groupRef: React.RefObject<THREE.Group | null> }) => {
+    const { camera } = useThree();
 
     useEffect(() => {
-        // Wait a tick for geometry to settle
         const timeout = setTimeout(() => {
-            const box = new THREE.Box3().setFromObject(scene);
+            if (!groupRef.current) return;
+            const box = new THREE.Box3().setFromObject(groupRef.current);
             if (box.isEmpty()) return;
 
             const center = box.getCenter(new THREE.Vector3());
             const size = box.getSize(new THREE.Vector3());
             const maxDim = Math.max(size.x, size.y, size.z);
-            const distance = maxDim * 2;
+            const distance = maxDim * 1.8;
 
-            camera.position.set(center.x, center.y + distance * 0.3, center.z + distance);
+            camera.position.set(center.x + distance * 0.3, center.y + distance * 0.4, center.z + distance);
             camera.lookAt(center);
             camera.updateProjectionMatrix();
 
             if (controlsRef.current) {
                 controlsRef.current.target.copy(center);
                 controlsRef.current.update();
-                // Save this nicely framed state as the "reset" target
                 controlsRef.current.saveState();
             }
-        }, 100);
+        }, 150);
 
         return () => clearTimeout(timeout);
-    }, [scene, camera, controlsRef]);
+    }, [camera, controlsRef, groupRef]);
 
     return null;
 };
@@ -97,6 +96,7 @@ const Model = ({ url, ext }: { url: string, ext: string }) => {
 
 export const ThreeViewer = ({ fileUrl, fileExt, status }: ThreeViewerProps) => {
     const controlsRef = useRef<any>(null);
+    const groupRef = useRef<THREE.Group>(null);
     const { t } = useI18n();
 
     const handleResetView = useCallback(() => {
@@ -147,11 +147,13 @@ export const ThreeViewer = ({ fileUrl, fileExt, status }: ThreeViewerProps) => {
                 <directionalLight position={[-10, -10, -5]} intensity={0.3} />
                 <pointLight position={[0, 50, 0]} intensity={0.3} />
 
-                <Center>
-                    <Model url={fileUrl} ext={fileExt || 'stl'} />
-                </Center>
+                <group ref={groupRef}>
+                    <Center>
+                        <Model url={fileUrl} ext={fileExt || 'stl'} />
+                    </Center>
+                </group>
 
-                <CameraFramer controlsRef={controlsRef} />
+                <CameraFramer controlsRef={controlsRef} groupRef={groupRef} />
                 <OrbitControls ref={controlsRef} makeDefault />
             </Canvas>
 
