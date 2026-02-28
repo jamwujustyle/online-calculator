@@ -30,32 +30,49 @@ class AIService:
         material = project.production_params.get("material", "Unknown")
         technology = project.production_params.get("technology", "Unknown")
         
-        prompt = f"""
-        Create a technical description and a short commercial pitch for a 3D fabricated part based on this data:
-        - Dimensions: {dim}
-        - Volume: {vol}
-        - Complexity (polygons): {poly}
-        - Material: {material}
-        - Technology: {technology}
-        - Price: {cost}
-        
-        Output exactly two paragraphs separated by a single blank line.
-        Paragraph 1: Technical description.
-        Paragraph 2: Commercial pitch.
-        """
-        
+        # we put static content in the beginning to enable prefix caching
+        system_prompt = """[3D_CALC_STATIC_INSTRUCTIONS]
+Assistant for industrial 3D printing. Generate content exactly in this structure:
+1. Reasoning (max 50 chars, single line)
+2. Technical Description (single paragraph)
+3. Commercial Pitch (single paragraph)
+
+Output MUST follow this format strictly with no extra text or labels.
+"""
+        # Dynamic data passed as user prompt
+        user_data = f"""DATA:
+- Dim: {dim}
+- Vol: {vol}
+- Poly: {poly}
+- Mat: {material}
+- Tech: {technology}
+- Price: {cost}
+"""
+
         try:
             response = self.client.chat.completions.create(
                 model="gpt-4o",
-                messages=[{"role": "user", "content": prompt}],
-                temperature=0.7
+                messages=[
+                    {"role": "system", "content": system_prompt},
+                    {"role": "user", "content": user_data}
+                ],
+                temperature=0.7,
+                max_tokens=250
             )
-            texts = response.choices[0].message.content.strip().split("\n\n")
+            content = response.choices[0].message.content.strip()
+            lines = content.split("\n")
             
-            if len(texts) >= 2:
-                return texts[0], texts[1]
-            elif len(texts) == 1:
-                return texts[0], None
+            # Extract reasoning (first line)
+            reasoning = lines[0] if lines else ""
+            print(f"DEBUGGER AI REASONING: {reasoning[:50]}")
+            
+            # Filter paragraphs (skip empty and reasoning)
+            paragraphs = [l.strip() for l in lines[1:] if l.strip()]
+            
+            if len(paragraphs) >= 2:
+                return paragraphs[0], paragraphs[1]
+            elif len(paragraphs) == 1:
+                return paragraphs[0], None
             return None, None
         except Exception as e:
             raise AIServiceException("Failed to generate AI content", details=str(e))
