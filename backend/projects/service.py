@@ -1,7 +1,6 @@
-from typing import List, Optional
-from fastapi import HTTPException
 import models
 import schemas
+from exceptions import ProjectNotFoundException
 from .repo import ProjectRepository
 
 class ProjectService:
@@ -17,7 +16,7 @@ class ProjectService:
     def get_project(self, project_id: str, user_id: str) -> models.Project:
         project = self.repository.get_project(project_id, user_id)
         if project is None:
-            raise HTTPException(status_code=404, detail="Project not found")
+            raise ProjectNotFoundException(project_id)
         return project
 
     def update_project_params(self, project_id: str, user_id: str, params: schemas.ProjectUpdateParams) -> models.Project:

@@ -8,6 +8,7 @@ from auth.route import get_current_user
 from .file_service import FileService
 from .repo import ProjectRepository
 from .service import ProjectService
+from exceptions import ProjectNotFoundException, AppException
 
 router = APIRouter(prefix="/projects", tags=["projects"])
 file_service = FileService()
