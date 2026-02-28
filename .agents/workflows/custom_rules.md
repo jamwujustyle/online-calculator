@@ -10,3 +10,4 @@ description: Custom project rules and guidelines
 5. **Autonomy Limits**: Do not modify files outside the direct scope of the user's request.
 6. **Destructive Actions**: Do not delete configurations or sample data files arbitrarily.
 7. **Package Managers**: DO NOT run npm commands (`npm run build`, `npm install`, etc) manually. The application runs through Docker, so rely on the `docker compose` containers to handle dependencies and builds.
+8. **Browser Tool**: Do NOT use the browser subagent tool. All testing and verification should be done by the user manually.
