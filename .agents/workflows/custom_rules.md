@@ -11,3 +11,4 @@ description: Custom project rules and guidelines
 6. **Destructive Actions**: Do not delete configurations or sample data files arbitrarily.
 7. **Package Managers**: DO NOT run npm commands (`npm run build`, `npm install`, etc) manually. The application runs through Docker, so rely on the `docker compose` containers to handle dependencies and builds.
 8. **Browser Tool**: Do NOT use the browser subagent tool. All testing and verification should be done by the user manually.
+9. **Artifacts**: Do NOT proactively generate `implementation_plan.md`, `walkthrough.md`, or other complex markdown artifacts. It takes too much time. Stick to concise communication and direct code implementation.
